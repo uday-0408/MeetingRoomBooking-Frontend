@@ -1,0 +1,28 @@
+.navbar-brand {
+  font-size: 1.5rem;
+}
+
+.nav-link {
+  margin: 0 10px;
+  transition: background-color 0.3s;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+}
+
+.nav-link.active {
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+}
+
+.main-content {
+  min-height: calc(100vh - 200px);
+  padding-top: 20px;
+}
+
+.footer {
+  margin-top: auto;
+}

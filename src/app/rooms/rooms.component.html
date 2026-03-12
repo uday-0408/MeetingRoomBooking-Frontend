@@ -1,0 +1,42 @@
+<div class="container">
+  <h2 class="mb-4">Meeting Rooms</h2>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading rooms...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="alert alert-danger error-message" role="alert">
+    <strong>Error:</strong> {{ errorMessage }}
+    <button type="button" class="btn btn-sm btn-outline-danger float-end" (click)="loadRooms()">
+      Retry
+    </button>
+  </div>
+
+  <!-- Rooms List -->
+  <div *ngIf="!loading && !errorMessage" class="row">
+    <div class="col-md-4" *ngFor="let room of rooms">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">{{ room.name }}</h5>
+          <p class="card-text">
+            <strong>Capacity:</strong> {{ room.capacity }} people<br>
+            <strong>Location:</strong> {{ room.location }}
+          </p>
+          <button class="btn btn-primary" (click)="bookRoom(room)">
+            <i class="bi bi-calendar-plus"></i> Book This Room
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !errorMessage && rooms.length === 0" class="alert alert-info">
+    No meeting rooms available.
+  </div>
+</div>

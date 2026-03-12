@@ -1,0 +1,128 @@
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="mb-0">Book a Meeting Room</h4>
+        </div>
+        <div class="card-body">
+          
+          <!-- Success Message -->
+          <div *ngIf="successMessage" class="alert alert-success success-message" role="alert">
+            <strong>Success!</strong> {{ successMessage }}
+          </div>
+
+          <!-- Error Message -->
+          <div *ngIf="errorMessage" class="alert alert-danger error-message" role="alert">
+            <strong>Error:</strong> {{ errorMessage }}
+          </div>
+
+          <!-- Loading State -->
+          <div *ngIf="loading" class="loading">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading rooms...</p>
+          </div>
+
+          <!-- Booking Form -->
+          <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+            
+            <!-- Employee Name -->
+            <div class="mb-3">
+              <label for="employeeName" class="form-label">Employee Name *</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="employeeName" 
+                formControlName="employeeName"
+                [class.is-invalid]="isFieldInvalid('employeeName')"
+                placeholder="Enter your name">
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('employeeName')">
+                {{ getFieldError('employeeName') }}
+              </div>
+            </div>
+
+            <!-- Room Selection -->
+            <div class="mb-3">
+              <label for="roomId" class="form-label">Meeting Room *</label>
+              <select 
+                class="form-select" 
+                id="roomId" 
+                formControlName="roomId"
+                [class.is-invalid]="isFieldInvalid('roomId')">
+                <option value="">Select a room</option>
+                <option *ngFor="let room of rooms" [value]="room.id">
+                  {{ room.name }} - {{ room.location }} (Capacity: {{ room.capacity }})
+                </option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('roomId')">
+                Please select a room
+              </div>
+            </div>
+
+            <!-- Date -->
+            <div class="mb-3">
+              <label for="bookingDate" class="form-label">Date *</label>
+              <input 
+                type="date" 
+                class="form-control" 
+                id="bookingDate" 
+                formControlName="bookingDate"
+                [class.is-invalid]="isFieldInvalid('bookingDate')">
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('bookingDate')">
+                Please select a date
+              </div>
+            </div>
+
+            <!-- Start Time -->
+            <div class="mb-3">
+              <label for="startTime" class="form-label">Start Time *</label>
+              <input 
+                type="time" 
+                class="form-control" 
+                id="startTime" 
+                formControlName="startTime"
+                [class.is-invalid]="isFieldInvalid('startTime')">
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('startTime')">
+                Please select a start time
+              </div>
+            </div>
+
+            <!-- End Time -->
+            <div class="mb-3">
+              <label for="endTime" class="form-label">End Time *</label>
+              <input 
+                type="time" 
+                class="form-control" 
+                id="endTime" 
+                formControlName="endTime"
+                [class.is-invalid]="isFieldInvalid('endTime')">
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('endTime')">
+                Please select an end time
+              </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between">
+              <button 
+                type="button" 
+                class="btn btn-secondary" 
+                routerLink="/rooms"
+                [disabled]="submitting">
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                class="btn btn-primary" 
+                [disabled]="submitting || bookingForm.invalid">
+                <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2"></span>
+                {{ submitting ? 'Submitting...' : 'Book Room' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
