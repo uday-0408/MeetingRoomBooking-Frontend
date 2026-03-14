@@ -1,7 +1,11 @@
 <div class="container">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="mb-0">Meeting Rooms</h2>
-    <a class="btn btn-success" routerLink="/rooms/add">Add New Meeting Room</a>
+    <a *ngIf="authService.isAdmin()" class="btn btn-success" routerLink="/rooms/add">Add New Meeting Room</a>
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success" role="alert">
+    {{ successMessage }}
   </div>
 
   <!-- Loading State -->
@@ -24,15 +28,31 @@
   <div *ngIf="!loading && !errorMessage" class="row">
     <div class="col-md-4" *ngFor="let room of rooms">
       <div class="card">
+        <img
+          *ngIf="room.imageUrl"
+          [src]="room.imageUrl"
+          class="card-img-top"
+          [alt]="room.roomName"
+        />
         <div class="card-body">
-          <h5 class="card-title">{{ room.name }}</h5>
+          <h5 class="card-title">{{ room.roomName }}</h5>
           <p class="card-text">
             <strong>Capacity:</strong> {{ room.capacity }} people<br>
             <strong>Location:</strong> {{ room.location }}
           </p>
-          <button class="btn btn-primary" (click)="bookRoom(room)">
-            <i class="bi bi-calendar-plus"></i> Book This Room
-          </button>
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary" (click)="bookRoom(room)">
+              Book This Room
+            </button>
+            <button
+              *ngIf="authService.isAdmin()"
+              class="btn btn-outline-danger"
+              (click)="deleteRoom(room)"
+              [disabled]="deletingRoomId === room.id"
+            >
+              {{ deletingRoomId === room.id ? 'Deleting...' : 'Delete Room' }}
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { BookingService, BookingResponse } from '../services/booking.service';
+import { AuthService } from '../services/auth.service';
+import { Booking } from '../services/api.service';
+import { BookingService } from '../services/booking.service';
 
 @Component({
   selector: 'app-booking-list',
@@ -7,13 +9,16 @@ import { BookingService, BookingResponse } from '../services/booking.service';
   styleUrls: ['./booking-list.component.css']
 })
 export class BookingListComponent implements OnInit {
-  bookings: BookingResponse[] = [];
+  bookings: Booking[] = [];
   loading = false;
   errorMessage = '';
   successMessage = '';
   deletingId: number | null = null;
 
-  constructor(private bookingService: BookingService) { }
+  constructor(
+    private bookingService: BookingService,
+    public authService: AuthService
+  ) { }
 
   ngOnInit(): void {
     this.loadBookings();
@@ -37,6 +42,11 @@ export class BookingListComponent implements OnInit {
 
   deleteBooking(id: number | undefined): void {
     if (!id) return;
+
+    if (!this.authService.isAdmin()) {
+      this.errorMessage = 'Only admin users can cancel bookings.';
+      return;
+    }
     
     if (!confirm('Are you sure you want to delete this booking?')) {
       return;

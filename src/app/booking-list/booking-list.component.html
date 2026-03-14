@@ -45,12 +45,14 @@
           <tbody>
             <tr *ngFor="let booking of bookings">
               <td>{{ booking.employeeName }}</td>
-              <td>{{ booking.roomName || 'Room #' + booking.roomId }}</td>
+              <td>Room #{{ booking.roomId }}</td>
               <td>{{ formatDate(booking.bookingDate) }}</td>
               <td>{{ formatTime(booking.startTime) }}</td>
               <td>{{ formatTime(booking.endTime) }}</td>
               <td>
+                <span *ngIf="!authService.isAdmin()" class="text-muted">Admin only</span>
                 <button 
+                  *ngIf="authService.isAdmin()"
                   class="btn btn-sm btn-danger" 
                   (click)="deleteBooking(booking.id)"
                   [disabled]="deletingId === booking.id">

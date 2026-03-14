@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApiService, Room } from '../services/api.service';
-import { BookingService, BookingRequest } from '../services/booking.service';
+import { MeetingRoom } from '../services/api.service';
+import { BookingService } from '../services/booking.service';
+import { RoomService } from '../services/room.service';
 
 @Component({
   selector: 'app-booking-form',
@@ -11,7 +12,7 @@ import { BookingService, BookingRequest } from '../services/booking.service';
 })
 export class BookingFormComponent implements OnInit {
   bookingForm: FormGroup;
-  rooms: Room[] = [];
+  rooms: MeetingRoom[] = [];
   loading = false;
   submitting = false;
   errorMessage = '';
@@ -19,7 +20,7 @@ export class BookingFormComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private apiService: ApiService,
+    private roomService: RoomService,
     private bookingService: BookingService,
     private route: ActivatedRoute,
     private router: Router
@@ -46,7 +47,7 @@ export class BookingFormComponent implements OnInit {
 
   loadRooms(): void {
     this.loading = true;
-    this.apiService.getRooms().subscribe({
+    this.roomService.getRooms().subscribe({
       next: (data) => {
         this.rooms = data;
         this.loading = false;
@@ -70,20 +71,8 @@ export class BookingFormComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    // Build the booking request object matching backend API format
-    const booking: BookingRequest = {
-      roomId: parseInt(this.bookingForm.value.roomId),
-      employeeName: this.bookingForm.value.employeeName,
-      bookingDate: this.bookingForm.value.bookingDate,
-      startTime: this.bookingForm.value.startTime + ':00',  // Convert HH:mm to HH:mm:ss
-      endTime: this.bookingForm.value.endTime + ':00'       // Convert HH:mm to HH:mm:ss
-    };
-
-    console.log('Form values:', this.bookingForm.value);
-    console.log('Booking object:', booking);
-
-    this.bookingService.createBooking(booking).subscribe({
-      next: (response) => {
+    this.bookingService.createBookingFromForm(this.bookingForm.value).subscribe({
+      next: () => {
         this.submitting = false;
         this.successMessage = 'Booking created successfully!';
         this.bookingForm.reset();

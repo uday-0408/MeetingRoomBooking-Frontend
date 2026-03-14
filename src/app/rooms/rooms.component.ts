@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ApiService, Room } from '../services/api.service';
+import { AuthService } from '../services/auth.service';
+import { MeetingRoom } from '../services/api.service';
+import { RoomService } from '../services/room.service';
 
 @Component({
   selector: 'app-rooms',
@@ -8,12 +10,15 @@ import { ApiService, Room } from '../services/api.service';
   styleUrls: ['./rooms.component.css']
 })
 export class RoomsComponent implements OnInit {
-  rooms: Room[] = [];
+  rooms: MeetingRoom[] = [];
   loading = false;
   errorMessage = '';
+  successMessage = '';
+  deletingRoomId: number | null = null;
 
   constructor(
-    private apiService: ApiService,
+    private roomService: RoomService,
+    public authService: AuthService,
     private router: Router
   ) { }
 
@@ -25,7 +30,7 @@ export class RoomsComponent implements OnInit {
     this.loading = true;
     this.errorMessage = '';
     
-    this.apiService.getRooms().subscribe({
+    this.roomService.getRooms().subscribe({
       next: (data) => {
         this.rooms = data;
         this.loading = false;
@@ -37,10 +42,36 @@ export class RoomsComponent implements OnInit {
     });
   }
 
-  bookRoom(room: Room): void {
+  bookRoom(room: MeetingRoom): void {
     // Navigate to booking form with room pre-selected
     this.router.navigate(['/book'], { 
       queryParams: { roomId: room.id } 
+    });
+  }
+
+  deleteRoom(room: MeetingRoom): void {
+    if (!this.authService.isAdmin()) {
+      return;
+    }
+
+    if (!confirm(`Delete room "${room.roomName}"?`)) {
+      return;
+    }
+
+    this.deletingRoomId = room.id;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    this.roomService.deleteRoom(room.id).subscribe({
+      next: () => {
+        this.successMessage = 'Meeting room deleted successfully.';
+        this.deletingRoomId = null;
+        this.loadRooms();
+      },
+      error: (error) => {
+        this.errorMessage = error.message || 'Failed to delete room.';
+        this.deletingRoomId = null;
+      }
     });
   }
 }

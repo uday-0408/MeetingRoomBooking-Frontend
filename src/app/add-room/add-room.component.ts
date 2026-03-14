@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ApiService, CreateRoomRequest } from '../services/api.service';
+import { AuthService } from '../services/auth.service';
+import { AddRoomFormValue, RoomService } from '../services/room.service';
 
 @Component({
   selector: 'app-add-room',
@@ -13,10 +14,12 @@ export class AddRoomComponent {
   isSubmitting = false;
   successMessage = '';
   errorMessage = '';
+  selectedImageFile: File | null = null;
 
   constructor(
     private fb: FormBuilder,
-    private apiService: ApiService,
+    private roomService: RoomService,
+    public authService: AuthService,
     private router: Router
   ) {
     this.addRoomForm = this.fb.group({
@@ -24,6 +27,10 @@ export class AddRoomComponent {
       capacity: [1, [Validators.required, Validators.min(1)]],
       location: ['', Validators.required]
     });
+
+    if (!this.authService.isAdmin()) {
+      this.router.navigate(['/rooms']);
+    }
   }
 
   get formControls() {
@@ -41,13 +48,14 @@ export class AddRoomComponent {
     this.successMessage = '';
     this.errorMessage = '';
 
-    const payload: CreateRoomRequest = {
+    const payload: AddRoomFormValue = {
       roomName: this.formControls['roomName'].value,
       capacity: Number(this.formControls['capacity'].value),
-      location: this.formControls['location'].value
+      location: this.formControls['location'].value,
+      imageFile: this.selectedImageFile
     };
 
-    this.apiService.createRoom(payload).subscribe({
+    this.roomService.createRoomWithOptionalImage(payload).subscribe({
       next: () => {
         this.successMessage = 'Meeting room created successfully.';
         this.isSubmitting = false;
@@ -62,5 +70,11 @@ export class AddRoomComponent {
         this.isSubmitting = false;
       }
     });
+  }
+
+  onImageSelected(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0] ?? null;
+    this.selectedImageFile = file;
   }
 }

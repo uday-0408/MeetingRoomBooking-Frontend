@@ -9,8 +9,9 @@ import { RoomsComponent } from './rooms/rooms.component';
 import { BookingFormComponent } from './booking-form/booking-form.component';
 import { BookingListComponent } from './booking-list/booking-list.component';
 import { AddRoomComponent } from './add-room/add-room.component';
-import { ApiService } from './services/api.service';
-import { BookingService } from './services/booking.service';
+import { LoginComponent } from './login/login.component';
+import { RegisterComponent } from './register/register.component';
+import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,10 @@ import { BookingService } from './services/booking.service';
     RoomsComponent,
     BookingFormComponent,
     BookingListComponent,
-    AddRoomComponent
+    AddRoomComponent,
+    LoginComponent,
+    RegisterComponent,
+    AdminDashboardComponent
   ],
   imports: [
     BrowserModule,
@@ -26,7 +30,6 @@ import { BookingService } from './services/booking.service';
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [ApiService, BookingService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
