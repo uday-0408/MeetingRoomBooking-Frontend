@@ -1,14 +1,14 @@
 .card {
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
   margin-bottom: 20px;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 20px 34px rgba(13, 49, 74, 0.18);
 }
 
 .card-title {
-  color: #007bff;
-  font-weight: 600;
+  color: #0e5f7f;
+  font-weight: 700;
 }

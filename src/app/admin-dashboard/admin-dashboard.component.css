@@ -1,3 +1,9 @@
 .card {
-  border-radius: 0.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 14px 28px rgba(16, 48, 72, 0.1);
+}
+
+.display-6 {
+  color: #0b688d;
+  font-weight: 800;
 }

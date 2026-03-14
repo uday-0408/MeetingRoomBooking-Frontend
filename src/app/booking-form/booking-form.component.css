@@ -1,17 +1,18 @@
 .card-header {
-  background-color: #28a745;
+  background: linear-gradient(90deg, #0c7ea9, #17a6be);
 }
 
 .form-label {
-  font-weight: 500;
+  font-weight: 700;
+  color: #214057;
 }
 
 .btn-primary {
-  background-color: #28a745;
-  border-color: #28a745;
+  background-color: #0c7ea9;
+  border-color: #0c7ea9;
 }
 
 .btn-primary:hover {
-  background-color: #218838;
-  border-color: #1e7e34;
+  background-color: #065d7f;
+  border-color: #065d7f;
 }
