@@ -11,6 +11,12 @@ export interface Room {
   location: string;
 }
 
+export interface CreateRoomRequest {
+  roomName: string;
+  capacity: number;
+  location: string;
+}
+
 export interface Booking {
   id?: number;
   employeeName: string;
@@ -36,7 +42,7 @@ export class ApiService {
       .pipe(catchError(this.handleError));
   }
 
-  createRoom(room: Room): Observable<Room> {
+  createRoom(room: any): Observable<Room> {
     return this.http.post<Room>(`${this.baseUrl}/rooms`, room)
       .pipe(catchError(this.handleError));
   }

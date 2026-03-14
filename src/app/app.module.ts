@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { RoomsComponent } from './rooms/rooms.component';
 import { BookingFormComponent } from './booking-form/booking-form.component';
 import { BookingListComponent } from './booking-list/booking-list.component';
+import { AddRoomComponent } from './add-room/add-room.component';
 import { ApiService } from './services/api.service';
 import { BookingService } from './services/booking.service';
 
@@ -16,7 +17,8 @@ import { BookingService } from './services/booking.service';
     AppComponent,
     RoomsComponent,
     BookingFormComponent,
-    BookingListComponent
+    BookingListComponent,
+    AddRoomComponent
   ],
   imports: [
     BrowserModule,

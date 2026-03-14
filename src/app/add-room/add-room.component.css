@@ -1,0 +1,7 @@
+.card {
+  border-radius: 0.5rem;
+}
+
+.invalid-feedback {
+  display: block;
+}
