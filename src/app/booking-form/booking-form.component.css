@@ -16,3 +16,127 @@
   background-color: #065d7f;
   border-color: #065d7f;
 }
+
+.clock-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+}
+
+.clock-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(16, 34, 56, 0.45);
+}
+
+.clock-modal__panel {
+  position: relative;
+  width: min(92vw, 430px);
+  margin: 8vh auto 0;
+  background: #fefefe;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.25);
+}
+
+.clock-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.clock-preview {
+  text-align: center;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #0a5f83;
+  margin-bottom: 10px;
+}
+
+.clock-step-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.analog-clock {
+  position: relative;
+  width: 290px;
+  height: 290px;
+  margin: 0 auto;
+  border: 6px solid #5ca7d8;
+  border-radius: 50%;
+  background: radial-gradient(circle at 45% 30%, #ffffff, #eef6ff);
+}
+
+.analog-clock__center-dot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #f28c36;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.analog-clock__tick {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #1f2d3d;
+  font-weight: 700;
+  font-size: 0.86rem;
+  line-height: 36px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.analog-clock__tick:hover {
+  background: #dbecfb;
+}
+
+.analog-clock__tick.active {
+  background: #1d8cd4;
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(29, 140, 212, 0.36);
+}
+
+.clock-current-values {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+.duration-chip {
+  margin-top: 10px;
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #e9f6ff;
+  color: #0a5f83;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 520px) {
+  .analog-clock {
+    width: 250px;
+    height: 250px;
+  }
+
+  .analog-clock__tick {
+    width: 32px;
+    height: 32px;
+    font-size: 0.78rem;
+    line-height: 32px;
+  }
+}

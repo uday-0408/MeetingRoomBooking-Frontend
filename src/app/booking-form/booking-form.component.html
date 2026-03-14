@@ -6,7 +6,6 @@
           <h4 class="mb-0">Book a Meeting Room</h4>
         </div>
         <div class="card-body">
-          
           <!-- Success Message -->
           <div *ngIf="successMessage" class="alert alert-success success-message" role="alert">
             <strong>Success!</strong> {{ successMessage }}
@@ -27,17 +26,17 @@
 
           <!-- Booking Form -->
           <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
-            
             <!-- Employee Name -->
             <div class="mb-3">
               <label for="employeeName" class="form-label">Employee Name *</label>
-              <input 
-                type="text" 
-                class="form-control" 
-                id="employeeName" 
+              <input
+                type="text"
+                class="form-control"
+                id="employeeName"
                 formControlName="employeeName"
                 [class.is-invalid]="isFieldInvalid('employeeName')"
-                placeholder="Enter your name">
+                placeholder="Enter your name"
+              />
               <div class="invalid-feedback" *ngIf="isFieldInvalid('employeeName')">
                 {{ getFieldError('employeeName') }}
               </div>
@@ -46,11 +45,12 @@
             <!-- Room Selection -->
             <div class="mb-3">
               <label for="roomId" class="form-label">Meeting Room *</label>
-              <select 
-                class="form-select" 
-                id="roomId" 
+              <select
+                class="form-select"
+                id="roomId"
                 formControlName="roomId"
-                [class.is-invalid]="isFieldInvalid('roomId')">
+                [class.is-invalid]="isFieldInvalid('roomId')"
+              >
                 <option value="">Select a room</option>
                 <option *ngFor="let room of rooms" [value]="room.id">
                   {{ room.roomName }} - {{ room.location }} (Capacity: {{ room.capacity }})
@@ -64,58 +64,142 @@
             <!-- Date -->
             <div class="mb-3">
               <label for="bookingDate" class="form-label">Date *</label>
-              <input 
-                type="date" 
-                class="form-control" 
-                id="bookingDate" 
+              <input
+                type="date"
+                class="form-control"
+                id="bookingDate"
                 formControlName="bookingDate"
-                [class.is-invalid]="isFieldInvalid('bookingDate')">
-              <div class="invalid-feedback" *ngIf="isFieldInvalid('bookingDate')">
+                [attr.min]="minBookingDate"
+                [attr.max]="maxBookingDate"
+                [class.is-invalid]="isFieldInvalid('bookingDate') || (bookingForm.errors?.['bookingDateRange'] && bookingForm.get('bookingDate')?.touched)"
+              />
+              <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('bookingDate')">
                 Please select a date
               </div>
+              <div class="invalid-feedback d-block" *ngIf="bookingForm.errors?.['bookingDateRange'] && bookingForm.get('bookingDate')?.touched">
+                Booking date must be between {{ minBookingDate }} and {{ maxBookingDate }}.
+              </div>
+              <small class="text-muted">Allowed range: {{ minBookingDate }} to {{ maxBookingDate }}</small>
             </div>
 
             <!-- Start Time -->
             <div class="mb-3">
               <label for="startTime" class="form-label">Start Time *</label>
-              <input 
-                type="time" 
-                class="form-control" 
-                id="startTime" 
-                formControlName="startTime"
-                [class.is-invalid]="isFieldInvalid('startTime')">
-              <div class="invalid-feedback" *ngIf="isFieldInvalid('startTime')">
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="startTime"
+                  formControlName="startTime"
+                  readonly
+                  placeholder="Select from clock"
+                  [class.is-invalid]="isFieldInvalid('startTime') || (bookingForm.errors?.['invalidTimeRange'] && bookingForm.get('startTime')?.touched)"
+                />
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  (click)="openClockPicker('startTime')"
+                  title="Open analog clock picker"
+                >
+                  Open Clock
+                </button>
+              </div>
+              <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('startTime')">
                 Please select a start time
+              </div>
+              <div class="invalid-feedback d-block" *ngIf="bookingForm.errors?.['startTimePast'] && bookingForm.get('startTime')?.touched">
+                Start time must be after the current time.
               </div>
             </div>
 
             <!-- End Time -->
             <div class="mb-3">
               <label for="endTime" class="form-label">End Time *</label>
-              <input 
-                type="time" 
-                class="form-control" 
-                id="endTime" 
-                formControlName="endTime"
-                [class.is-invalid]="isFieldInvalid('endTime')">
-              <div class="invalid-feedback" *ngIf="isFieldInvalid('endTime')">
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="endTime"
+                  formControlName="endTime"
+                  readonly
+                  placeholder="Select from clock"
+                  [class.is-invalid]="isFieldInvalid('endTime') || (bookingForm.errors?.['invalidTimeRange'] && bookingForm.get('endTime')?.touched)"
+                />
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  (click)="openClockPicker('endTime')"
+                  title="Open analog clock picker"
+                >
+                  Open Clock
+                </button>
+              </div>
+              <div class="invalid-feedback d-block" *ngIf="isFieldInvalid('endTime')">
                 Please select an end time
+              </div>
+              <div class="invalid-feedback d-block" *ngIf="bookingForm.errors?.['invalidTimeRange'] && (bookingForm.get('startTime')?.touched || bookingForm.get('endTime')?.touched)">
+                Start time must be earlier than end time.
+              </div>
+              <small class="text-muted">Time must be selected from the clock picker.</small>
+              <div class="duration-chip" *ngIf="getDurationSummary()">
+                {{ getDurationSummary() }}
+              </div>
+            </div>
+
+            <div class="clock-modal" *ngIf="activeTimeField">
+              <div class="clock-modal__backdrop" (click)="closeClockPicker()"></div>
+              <div class="clock-modal__panel" role="dialog" aria-modal="true" aria-label="Clock time picker">
+                <div class="clock-modal__header">
+                  <h5 class="mb-0">Choose {{ activeTimeField === 'startTime' ? 'Start Time' : 'End Time' }}</h5>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" (click)="closeClockPicker()">Close</button>
+                </div>
+
+                <div class="clock-preview">{{ getClockPreview() }}</div>
+
+                <div class="clock-step-buttons">
+                  <button type="button" class="btn btn-sm" [class.btn-primary]="clockStep === 'hour'" [class.btn-outline-secondary]="clockStep !== 'hour'" (click)="setClockStep('hour')">
+                    Hour
+                  </button>
+                  <button type="button" class="btn btn-sm" [class.btn-primary]="clockStep === 'minute'" [class.btn-outline-secondary]="clockStep !== 'minute'" (click)="setClockStep('minute')">
+                    Minute
+                  </button>
+                  <button type="button" class="btn btn-sm" [class.btn-primary]="selectedPeriod === 'AM'" [class.btn-outline-secondary]="selectedPeriod !== 'AM'" (click)="setPeriod('AM')">
+                    AM
+                  </button>
+                  <button type="button" class="btn btn-sm" [class.btn-primary]="selectedPeriod === 'PM'" [class.btn-outline-secondary]="selectedPeriod !== 'PM'" (click)="setPeriod('PM')">
+                    PM
+                  </button>
+                </div>
+
+                <div class="analog-clock">
+                  <div class="analog-clock__center-dot"></div>
+
+                  <button
+                    *ngFor="let item of (clockStep === 'hour' ? hourDial : minuteDial)"
+                    type="button"
+                    class="analog-clock__tick"
+                    [class.active]="clockStep === 'hour' ? isHourSelected(item.value) : isMinuteSelected(item.value)"
+                    [style.left]="item.left"
+                    [style.top]="item.top"
+                    (click)="clockStep === 'hour' ? selectClockHour(item.value) : selectClockMinute(item.value)"
+                  >
+                    {{ item.label }}
+                  </button>
+                </div>
+
+                <div class="clock-current-values text-muted">
+                  <span>Start: {{ getActiveTimeValue('startTime') }}</span>
+                  <span>End: {{ getActiveTimeValue('endTime') }}</span>
+                </div>
               </div>
             </div>
 
             <!-- Buttons -->
             <div class="d-flex justify-content-between">
-              <button 
-                type="button" 
-                class="btn btn-secondary" 
-                routerLink="/rooms"
-                [disabled]="submitting">
+              <button type="button" class="btn btn-secondary" routerLink="/rooms" [disabled]="submitting">
                 Cancel
               </button>
-              <button 
-                type="submit" 
-                class="btn btn-primary" 
-                [disabled]="submitting || bookingForm.invalid">
+              <button type="submit" class="btn btn-primary" [disabled]="submitting || bookingForm.invalid">
                 <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2"></span>
                 {{ submitting ? 'Submitting...' : 'Book Room' }}
               </button>
